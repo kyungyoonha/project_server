@@ -1,7 +1,6 @@
 let Sequelize = require("sequelize");
 let path = require("path");
 let fs = require("fs");
-const { Model } = require("sequelize");
 
 const sequelize = new Sequelize(
     process.env.DATABASE,
@@ -11,7 +10,8 @@ const sequelize = new Sequelize(
         host: process.env.DB_HOST,
         dialect: "mysql",
         timezone: "+09:00", //한국 시간 셋팅
-        operatorsAliases: Sequelize.Op,
+        //operatorsAliases: false,
+        // operatorsAliases: Sequelize.Op,
         pool: {
             max: 5,
             min: 0,
@@ -26,7 +26,8 @@ fs.readdirSync(__dirname)
         return file.indexOf(".js") && file !== "index.js";
     })
     .forEach((file) => {
-        var model = sequelize.import(path.join(__dirname, file));
+        // let model = sequelize['import'](path.join(__dirname, file));
+        let model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes)
         db[model.name] = model;
     });
 

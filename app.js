@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const path = require("path");
 const cors = require("cors");
 
@@ -19,25 +20,23 @@ db.sequelize
     })
     .then(() => {
         console.log("DB Sync complete.");
-        // 더미 데이터가 필요하면 아래 설정
-        //  require('./config/insertDummyData')();
     })
     .catch((err) => {
         console.error("Unable to connect to the database:", err);
     });
 
 // Middleware
-app.use(bodyParser.json()); // request.body로 데이터 접근 가능
-app.use(bodyParser.urlencoded({ extended: false })); // 노드의 queryStirng 사용하여 url 해석
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
 app.use(cors());
 
 // Static
 app.use(express.static(path.resolve(__dirname, "uploads")));
 
-// 라우터
+// Routes
 app.use(require("./routes"));
 
 app.listen(port, () => {
-    console.log("app.js", __dirname);
     console.log("express listening on port", port);
 });

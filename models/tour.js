@@ -1,0 +1,91 @@
+"use strict";
+module.exports = (sequelize, DataTypes) => {
+    return sequelize.define("tour", {
+        idx: {
+            type: DataTypes.INTEGER,
+            primaryKey: true,
+            autoIncrement: true,
+            unique: true,
+            allowNull: false,
+        },
+        tourname: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        nationtype: {
+            type: DataTypes.STRING(1),
+            allowNull: false,
+        },
+        nationcodeidx: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        areacodeidx: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        tourcode: {
+            type: DataTypes.STRING(20),
+            allowNull: false,
+        },
+        address: {
+            type: DataTypes.STRING(200),
+            allowNull: false,
+        },
+        telnumber: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        admissionfee: {
+            type: DataTypes.STRING(10),
+            allowNull: false,
+        },
+        operatingtime: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        interesttag: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        inextroversion: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        openclose: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+        subaudioYN: {
+            type: DataTypes.STRING(1),
+            allowNull: false,
+        },
+        mainaudioYN: {
+            type: DataTypes.STRING(1),
+            allowNull: false,
+        },
+        lat: {
+            type: DataTypes.DECIMAL(11, 4),
+            allowNull: false,
+        },
+        lng: {
+            type: DataTypes.DECIMAL(11, 4),
+            allowNull: false,
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW,
+            field: "regdate",
+        },
+        reguser: {
+            type: DataTypes.STRING(50),
+            allowNull: false,
+        },
+        updatedAt: {
+            type: DataTypes.DATE,
+            name: "updatedAt",
+            field: "moddate",
+        },
+        moduser: { type: DataTypes.STRING(50) },
+    });
+};
