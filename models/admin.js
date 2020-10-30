@@ -1,4 +1,4 @@
-"use strict";
+
 module.exports = (sequelize, DataTypes) => {
     return sequelize.define("admin", {
         idx: {
@@ -15,6 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         id: {
             type: DataTypes.STRING(50),
             allowNull: false,
+            unique: true,
         },
         pw: {
             type: DataTypes.STRING(100),
@@ -24,7 +25,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        birthday: { type: DataTypes.DATE },
+        birthday: { type: DataTypes.DATE, defaultValue: null, },
         telnumber: { type: DataTypes.STRING(50) },
         email: { type: DataTypes.STRING(200) },
         englishname: { type: DataTypes.STRING(50) },

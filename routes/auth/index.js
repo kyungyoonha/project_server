@@ -7,18 +7,23 @@ const jwt = require("jsonwebtoken");
 router.post("/login", async (req, res) => {
     try {
         const { id, password } = req.body;
-
-        const user = await models.user.findOne({
+        const admin = await models.admin.findOne({
             where: {
                 id: id,
-                pw: password,
             },
         });
 
-        if (!user) {
+        if (!admin) {
             res.status(400).json({
-                success: false,
-                message: "이메일과 비밀번호를 확인해주세요.",
+                errors: { id: "일치하는 아이디가 없습니다." },
+            });
+        }
+
+        const passwordCheck = await bcrypt.compare(password, admin.pw);
+        console.log(passwordCheck);
+        if (!passwordCheck) {
+            res.status(400).json({
+                errors: { password: "비밀번호가 일치하지 않습니다." },
             });
         }
 
@@ -26,15 +31,12 @@ router.post("/login", async (req, res) => {
             expiresIn: process.env.JWT_EXPIRE,
         });
 
-        const { username, email } = user;
+        const { username, email } = admin;
 
         res.status(200).json({
-            success: true,
-            data: {
-                username,
-                email,
-                token,
-            },
+            username,
+            email,
+            token,
         });
     } catch (e) {
         res.status(500);
