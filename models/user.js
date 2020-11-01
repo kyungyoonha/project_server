@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: { type: DataTypes.STRING(200) },
         address: { type: DataTypes.STRING(50) },
-        emailaree: { type: DataTypes.STRING(1) },
+        emailaree: { type: DataTypes.STRING(1) }, // emailagree ### 
         messageagree: { type: DataTypes.STRING(1) },
         pushagree: { type: DataTypes.STRING(1) },
         etc: {
