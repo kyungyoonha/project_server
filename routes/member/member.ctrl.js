@@ -1,32 +1,35 @@
 const models = require("../../models");
 const bcrypt = require("bcryptjs");
-const path = require("path");
 
 exports.userInsert = async (req, res) => {
     try {
         const inputs = JSON.parse(req.body.jsonData);
-        const filename = req.file.filename;
-        const username = req.user.username;
+        
+        // 파일 처리
+        if(req.file){
+            const filename = req.file.filename;
+            const username = req.user.username;
+            inputs.profilename = filename.split('.')[0];
+            inputs.profilepath = `uploads/image/${filename}`;
+            inputs.reguser = username;
+            inputs.moduser = username;
+        }
 
         const user = await models.user.findOne({
             where: { id: inputs.id },
         });
 
-        if (user) {
+        // 아이디 체크
+        if (!user) {
             return res
                 .status(403)
                 .json({ error: "이미 가입한 아이디 입니다." });
         }
-
-        inputs.profilename = filename;
-        inputs.profilepath = path.join(`/uploads/image/${filename}`);
-        inputs.reguser = username;
-        inputs.moduser = username;
-        // 저장시 => /uploads/image/file.jpg ?
-        // 저장시 => http://localhost:8000/uploads/image/file.jpg
+        
         const newUser = await models.user.create(inputs);
-        newUser.save();
+        await newUser.save();
 
+        // tripTag 테이블 추가
         const keys = Object.keys(inputs.tripTag);
         keys.forEach(async (key) => {
             if (inputs.tripTag[key]) {
@@ -68,7 +71,7 @@ exports.driverInsert = async (req, res) => {
             if (req.files[item]) {
                 filename = req.files[item][0].filename;
                 inputs[item + "name"] = filename;
-                inputs[item + "path"] = `/uploads/image/${filename}`;
+                inputs[item + "path"] = `uploads/image/${filename}`;
             }
         });
         inputs.reguser = username;
@@ -79,7 +82,7 @@ exports.driverInsert = async (req, res) => {
 
         res.status(200).json(newDriver);
     } catch (e) {
-        console.log(e.message);
+        console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
@@ -103,6 +106,7 @@ exports.adminInsert = async (req, res) => {
 
         res.status(200).json(newAdmin);
     } catch (e) {
+        console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };

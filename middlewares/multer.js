@@ -1,17 +1,13 @@
 //이미지 저장되는 위치 설정
 const path = require("path");
+const uploadFolderName = require("../utils/uploadFolderName");
 
 //multer 셋팅
 const multer = require("multer");
 const storage = multer.diskStorage({
     destination: (req, file, callback) => {
-        const addPath =
-            file.mimetype.indexOf("image") > -1
-                ? "/image"
-                : file.mimetype.indexOf("audio") > -1
-                ? "/audio"
-                : "/ect";
-        const uploadDir = path.join(__dirname, `../uploads${addPath}`);
+        const addPath = uploadFolderName(file.mimetype);
+        const uploadDir = path.join(__dirname, `../uploads/${addPath}`);
         callback(null, uploadDir);
     },
     filename: (req, file, callback) => {

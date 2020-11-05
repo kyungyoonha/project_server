@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const { protect } = require("../../middlewares/auth");
+const { purchasecodeInsert } = require("./order.ctrl");
 
-router.post("/", (req, res) => {
-    res.send("order");
-});
+router.post("/purchasecode/insert", protect, purchasecodeInsert);
 
 module.exports = router;
