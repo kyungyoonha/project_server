@@ -1,9 +1,8 @@
 const models = require("../../models");
 const path = require("path");
 const fs = require('fs');
-const uploadFolderName = require('../../utils/uploadFolderName')
+const { getTypePath, getDatePath }  = require('../../utils/pathFunc')
 var nodemailer = require('nodemailer');
-var xoauth2 = require('xoauth2');
 
 exports.getNotice = async (req, res) => {
     try{
@@ -44,10 +43,11 @@ exports.noticeInsert = async (req, res) => {
         
         // 파일 처리
         if(req.file){
-            const filename = req.file.filename;
-            const addPath = uploadFolderName(req.file.mimetype)
-            inputs[saveName] = filename.split('.')[0],
-            inputs[savePath] = `uploads/${addPath}/${filename}`;
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            inputs[saveName] = originalname
+            inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
         }
         inputs.reguser = username;
         inputs.moduser = username;
@@ -75,12 +75,14 @@ exports.noticeUpdate = async (req, res) => {
 
         // 파일 처리
         if (req.file && notice[savePath]) {
-            const filename = req.file.filename;
-            const addPath = uploadFolderName(req.file.mimetype)
-
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            notice.setDataValue(saveName, originalname);
+            notice.setDataValue(savePath, `uploads/${typePath}/${datePath}/${filename}`);
+            
+            // 기존 파일 삭제
             fs.unlinkSync(path.join(__dirname, `../../${notice[savePath]}`));
-            notice.setDataValue(saveName, filename.split('.')[0]);
-            notice.setDataValue(savePath, `uploads/${addPath}/${filename}`);
         }
 
         notice.setDataValue("moduser", username);
@@ -125,7 +127,6 @@ exports.getQuestionDetail = async (req, res) => {
 }
 exports.questionInsert = async (req, res) => {
     try{
-        console.log('?')
         const saveName = 'filename';
         const savePath = 'filepath';
         const inputs = JSON.parse(req.body.jsonData);
@@ -133,10 +134,11 @@ exports.questionInsert = async (req, res) => {
 
         // 파일 처리
         if(req.file){
-            const filename = req.file.filename;
-            const addPath = uploadFolderName(req.file.mimetype)
-            inputs[saveName] = filename.split('.')[0];
-            inputs[savePath] = `uploads/${addPath}/${filename}`;
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            inputs[saveName] = originalname
+            inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
         }
         inputs.reguser = username;
         inputs.moduser = username;
@@ -174,7 +176,7 @@ exports.sendEmail = async (req, res) => {
             }
         })
         
-        const mailOptions = {
+        let mailOptions = {
             from: '트립소다 <ruddbsqkend@gmail.com>',
             to: inputs.to,
             subject: inputs.subject,
@@ -182,23 +184,17 @@ exports.sendEmail = async (req, res) => {
         }
 
         if(req.file){
-            const file = req.file;
-            // const filename = file.filename
-            const addPath = uploadFolderName(file.mimetype);
-            let uploaddir = path.join(__dirname, `../../uploads/${addPath}/`);
-            fs.writeFile(uploaddir + file.originalname, file.buffer, () => {})
-            var filepath = path.join(uploaddir, file.originalname);
-            console.log(filepath)
-            
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            const uploaddir = path.join(__dirname, `../../uploads/${typePath}/${datePath}/${filename}`)
             mailOptions.attachments = [
                 {
-                    fileName: req.file.originalname,
-                    path: filepath
+                    filename: originalname,
+                    content: await fs.promises.readFile(uploaddir)
                 }
-
             ]
         }
-
         smtpTransport.sendMail(mailOptions, (e, response)=>{
 
             if(e){

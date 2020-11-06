@@ -1,6 +1,7 @@
 const models = require("../../models");
 const path = require("path");
 const fs = require('fs');
+const { getTypePath, getDatePath } = require('../../utils/pathFunc');
 
 exports.getNationcode = async (req, res) => {
     try {
@@ -81,10 +82,11 @@ exports.areacodeInsert = async (req, res) => {
 
         // 파일 처리
         if(req.file){
-            const filename = req.file.filename;
-            const addPath = uploadFolderName(req.file.mimetype)
-            inputs[saveName] = filename.split('.')[0];
-            inputs[savePath] = `uploads/${addPath}/${filename}`;
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            inputs[saveName] = originalname
+            inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
         }
         inputs.reguser = username;
         inputs.moduser = username;
@@ -112,12 +114,13 @@ exports.areacodeUpdate = async (req, res) => {
 
         // 파일 처리
         if (req.file && areacode[savePath]) {
-            const filename = req.file.filename;
-            const addPath = uploadFolderName(req.file.mimetype)
-            
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            areacode.setDataValue(saveName, originalname);
+            areacode.setDataValue(savePath, `uploads/${typePath}/${datePath}/${filename}`);
+            // 기존 파일 삭제
             fs.unlinkSync(path.join(__dirname, `../../${areacode[savePath]}`));
-            areacode.setDataValue(saveName, filename.split('.')[0]);
-            areacode.setDataValue(savePath, `uploads/${addPath}/${filename}`);
         }
         
         areacode.setDataValue("moduser", username);

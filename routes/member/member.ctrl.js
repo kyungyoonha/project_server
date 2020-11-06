@@ -1,30 +1,35 @@
 const models = require("../../models");
 const bcrypt = require("bcryptjs");
+const { getTypePath, getDatePath } = require('../../utils/pathFunc');
 
 exports.userInsert = async (req, res) => {
     try {
+        const saveName = 'profilename';
+        const savePath = 'profilePath';
         const inputs = JSON.parse(req.body.jsonData);
-        
-        // 파일 처리
-        if(req.file){
-            const filename = req.file.filename;
-            const username = req.user.username;
-            inputs.profilename = filename.split('.')[0];
-            inputs.profilepath = `uploads/image/${filename}`;
-            inputs.reguser = username;
-            inputs.moduser = username;
-        }
+        const username = req.user.username;
 
+        // 아이디 체크
         const user = await models.user.findOne({
             where: { id: inputs.id },
         });
-
-        // 아이디 체크
+        
         if (!user) {
             return res
                 .status(403)
                 .json({ error: "이미 가입한 아이디 입니다." });
         }
+
+        // 파일 처리
+        if(req.file){
+            const { originalname, mimetype, filename } = req.file;
+            const typePath = getTypePath(mimetype);
+            const datePath = getDatePath();
+            inputs[saveName] = originalname
+            inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
+        }
+        inputs.reguser = username;
+        inputs.moduser = username;
         
         const newUser = await models.user.create(inputs);
         await newUser.save();
@@ -55,6 +60,8 @@ exports.driverInsert = async (req, res) => {
     try {
         const inputs = JSON.parse(req.body.jsonData);
         const username = req.user.username;
+        
+        // 아이디 체크
         const driver = await models.driver.findOne({
             where: { id: inputs.id },
         });
@@ -66,12 +73,13 @@ exports.driverInsert = async (req, res) => {
         }
 
         const imageList = ["driver", "car", "license"];
-        let filename;
         imageList.forEach((item) => {
             if (req.files[item]) {
-                filename = req.files[item][0].filename;
-                inputs[item + "name"] = filename;
-                inputs[item + "path"] = `uploads/image/${filename}`;
+                let { originalname, mimetype, filename } = req.files[item][0];
+                let typePath = getTypePath(mimetype);
+                let datePath = getDatePath();
+                inputs[item + "name"] = originalname;
+                inputs[item + "path"] = `uploads/${typePath}/${datePath}/${filename}`;
             }
         });
         inputs.reguser = username;
