@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("triptag", {
+    return sequelize.define("Triptag", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,

@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("drivercomplain", {
+    return sequelize.define("Drivercomplain", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,

@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("tourpicture", {
+    return sequelize.define("Tourpicture", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,

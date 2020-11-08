@@ -1,8 +1,8 @@
-const models = require("../../models");
+const { Purchasecode } = require("../../models");
 
 exports.purchasecodeInsert = async (req, res) => {
     try {
-        const newPurchasecode = await models.purchasecode.create(req.body);
+        const newPurchasecode = await Purchasecode.create(req.body);
         await newPurchasecode;
         res.status(200).json(newPurchasecode);
     } catch (e) {

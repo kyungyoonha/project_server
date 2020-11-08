@@ -1,44 +1,76 @@
-const models = require("../../models");
 const bcrypt = require("bcryptjs");
-const { getTypePath, getDatePath } = require('../../utils/pathFunc');
+const { getTypePath, getDatePath } = require("../../utils/pathFunc");
+const { User, Driver, Admin, TriptagModel } = require("../../models");
+const paginate = require("express-paginate");
+
+exports.getUser = async (req, res) => {
+    try {
+        const results = await User.findAndCountAll({
+            include: ["Triptag", "Drivercomplain", "Purchase", "Question"],
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            10,
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+exports.getDriver = async (req, res) => {
+    try {
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+exports.getAdmin = async (req, res) => {
+    try {
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 exports.userInsert = async (req, res) => {
     try {
-        const saveName = 'profilename';
-        const savePath = 'profilePath';
+        const saveName = "profilename";
+        const savePath = "profilepath";
         const inputs = JSON.parse(req.body.jsonData);
         const username = req.user.username;
 
         // 아이디 체크
-        const user = await models.user.findOne({
-            where: { id: inputs.id },
-        });
-        
-        if (!user) {
+        const user = await User.findOne({ where: { id: inputs.id } });
+
+        if (user)
             return res
                 .status(403)
                 .json({ error: "이미 가입한 아이디 입니다." });
-        }
 
         // 파일 처리
-        if(req.file){
+        if (req.file) {
             const { originalname, mimetype, filename } = req.file;
             const typePath = getTypePath(mimetype);
             const datePath = getDatePath();
-            inputs[saveName] = originalname
+            inputs[saveName] = originalname;
             inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
         }
         inputs.reguser = username;
         inputs.moduser = username;
-        
-        const newUser = await models.user.create(inputs);
+
+        const newUser = await User.create(inputs);
         await newUser.save();
 
         // tripTag 테이블 추가
         const keys = Object.keys(inputs.tripTag);
         keys.forEach(async (key) => {
             if (inputs.tripTag[key]) {
-                const newTripTag = await models.triptag.create({
+                const newTripTag = await TriptagModel.create({
                     useridx: newUser.idx,
                     tag: key,
                     reguser: username,
@@ -60,17 +92,16 @@ exports.driverInsert = async (req, res) => {
     try {
         const inputs = JSON.parse(req.body.jsonData);
         const username = req.user.username;
-        
+
         // 아이디 체크
-        const driver = await models.driver.findOne({
+        const driver = await Driver.findOne({
             where: { id: inputs.id },
         });
 
-        if (driver) {
-            return res.status(403).json({
-                error: "이미 가입한 아이디 입니다.",
-            });
-        }
+        if (driver)
+            return res
+                .status(403)
+                .json({ error: "이미 가입한 아이디 입니다." });
 
         const imageList = ["driver", "car", "license"];
         imageList.forEach((item) => {
@@ -79,13 +110,15 @@ exports.driverInsert = async (req, res) => {
                 let typePath = getTypePath(mimetype);
                 let datePath = getDatePath();
                 inputs[item + "name"] = originalname;
-                inputs[item + "path"] = `uploads/${typePath}/${datePath}/${filename}`;
+                inputs[
+                    item + "path"
+                ] = `uploads/${typePath}/${datePath}/${filename}`;
             }
         });
         inputs.reguser = username;
         inputs.moduser = username;
 
-        const newDriver = await models.driver.create(inputs);
+        const newDriver = await Driver.create(inputs);
         newDriver.save();
 
         res.status(200).json(newDriver);
@@ -97,17 +130,15 @@ exports.driverInsert = async (req, res) => {
 
 exports.adminInsert = async (req, res) => {
     try {
-        const user = await models.admin.findOne({
-            where: { id: req.body.id },
-        });
+        // 유저 아이디 중복 체크
+        const user = await Admin.findOne({ where: { id: req.body.id } });
 
-        if (user) {
+        if (user)
             return res
                 .status(403)
                 .json({ error: "이미 가입한 아이디 입니다." });
-        }
 
-        const newAdmin = await models.admin.create(req.body);
+        const newAdmin = await Admin.create(req.body);
         const salt = await bcrypt.genSalt(10);
         newAdmin.pw = await bcrypt.hash(newAdmin.pw, salt);
         await newAdmin.save();

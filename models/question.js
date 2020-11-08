@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("question", {
+    const Question = sequelize.define("Question", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -48,4 +48,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    return Question;
 };

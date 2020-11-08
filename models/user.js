@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("user", {
+    const User = sequelize.define("User", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -34,7 +34,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         email: { type: DataTypes.STRING(200) },
         address: { type: DataTypes.STRING(50) },
-        emailaree: { type: DataTypes.STRING(1) }, // emailagree ### 
+        emailaree: { type: DataTypes.STRING(1) }, // emailagree ###
         messageagree: { type: DataTypes.STRING(1) },
         pushagree: { type: DataTypes.STRING(1) },
         etc: {
@@ -69,4 +69,33 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    User.associate = (models) => {
+        User.hasOne(models.Triptag, {
+            as: "Triptag",
+            foreignKey: "useridx",
+            sourceKey: "idx",
+            // onDelete: "CASCASE",
+        });
+
+        User.hasMany(models.Drivercomplain, {
+            as: "Drivercomplain",
+            foreignKey: "useridx",
+            sourceKey: "idx",
+        });
+
+        User.hasMany(models.Purchase, {
+            as: "Purchase",
+            foreignKey: "useridx",
+            sourceKey: "idx",
+        });
+
+        User.hasMany(models.Question, {
+            as: "Question",
+            foreignKey: "useridx",
+            sourceKey: "idx",
+        });
+    };
+
+    return User;
 };

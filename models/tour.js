@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("tour", {
+    const Tour = sequelize.define("Tour", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -88,4 +88,37 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    Tour.associate = (models) => {
+        Tour.hasMany(models.Trabus, {
+            as: "Trabus",
+            foreignKey: "touridx",
+            sourceKey: "idx",
+        });
+
+        Tour.hasMany(models.Touraudio, {
+            as: "Touraudio",
+            foreignKey: "touridx",
+            sourceKey: "idx",
+        });
+
+        Tour.hasMany(models.Tourpicture, {
+            as: "Tourpicture",
+            foreignKey: "touridx",
+            sourceKey: "idx",
+        });
+
+        Tour.hasMany(models.Purchase, {
+            as: "Purchase",
+            foreignKey: "touridx",
+            sourceKey: "idx",
+        });
+
+        Tour.hasMany(models.Purchasetour, {
+            as: "Purchasetour",
+            foreignKey: "touridx",
+            sourceKey: "idx",
+        });
+    };
+    return Tour;
 };

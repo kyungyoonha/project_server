@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const model = require("../models");
+const { Admin } = require("../models");
 exports.protect = async (req, res, next) => {
     // req.body.reguser = "master";
     // next();
@@ -10,7 +10,7 @@ exports.protect = async (req, res, next) => {
     const token = req.headers.authorization.replace("Bearer ", "");
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const admin = await model.admin.findOne({
+        const admin = await Admin.findOne({
             where: { id: decoded.id },
         });
 

@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("driver", {
+    const Driver = sequelize.define("Driver", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -64,4 +64,20 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    Driver.associate = (models) => {
+        Driver.hasMany(models.Drivercomplain, {
+            as: "Drivercomplain",
+            foreignKey: "driveridx",
+            sourceKey: "idx",
+        });
+
+        Driver.hasMany(models.Trabus, {
+            as: "Trabus",
+            foreignKey: "driveridx",
+            sourceKey: "idx",
+        });
+    };
+
+    return Driver;
 };

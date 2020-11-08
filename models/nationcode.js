@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("nationcode", {
+    const Nationcode = sequelize.define("Nationcode", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -40,4 +40,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    Nationcode.associate = (models) => {
+        Nationcode.hasMany(models.Areacode, {
+            as: "Areacode",
+            foreignKey: "nationcodeidx",
+            sourceKey: "idx",
+        });
+    };
+
+    return Nationcode;
 };

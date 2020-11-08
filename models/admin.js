@@ -1,6 +1,5 @@
-
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("admin", {
+    const Admin = sequelize.define("Admin", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -25,7 +24,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER,
             allowNull: false,
         },
-        birthday: { type: DataTypes.DATE, defaultValue: null, },
+        birthday: { type: DataTypes.DATE, defaultValue: null },
         telnumber: { type: DataTypes.STRING(50) },
         email: { type: DataTypes.STRING(200) },
         englishname: { type: DataTypes.STRING(50) },
@@ -50,4 +49,6 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    return Admin;
 };

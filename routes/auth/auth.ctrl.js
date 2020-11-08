@@ -1,4 +1,4 @@
-const models = require("../../models");
+const { Admin } = require("../../models");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -21,7 +21,7 @@ exports.getMyInfo = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { id, pw } = req.body;
-        const admin = await models.admin.findOne({
+        const admin = await Admin.findOne({
             where: {
                 id: id,
             },

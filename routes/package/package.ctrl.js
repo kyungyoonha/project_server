@@ -1,11 +1,11 @@
-const models = require("../../models");
+const { Nationcode, Areacode } = require("../../models");
 const path = require("path");
-const fs = require('fs');
-const { getTypePath, getDatePath } = require('../../utils/pathFunc');
+const fs = require("fs");
+const { getTypePath, getDatePath } = require("../../utils/pathFunc");
 
 exports.getNationcode = async (req, res) => {
     try {
-        const nationcode = await models.nationcode.findAll();
+        const nationcode = await Nationcode.findAll();
         res.status(200).json(nationcode);
     } catch (e) {
         console.log(e);
@@ -15,7 +15,7 @@ exports.getNationcode = async (req, res) => {
 
 exports.getNationcodeDetail = async (req, res) => {
     try {
-        const nationcode = await models.nationcode.findOne({
+        const nationcode = await Nationcode.findOne({
             where: {
                 idx: req.params.id,
             },
@@ -33,7 +33,7 @@ exports.getNationcodeDetail = async (req, res) => {
 
 exports.nationcodeInsert = async (req, res) => {
     try {
-        const newNationcode = await models.nationcode.create(req.body);
+        const newNationcode = await Nationcode.create(req.body);
         await newNationcode.save();
         res.status(200).json(newNationcode);
     } catch (e) {
@@ -44,7 +44,7 @@ exports.nationcodeInsert = async (req, res) => {
 
 exports.getAreacode = async (req, res) => {
     try {
-        const areacode = await models.areacode.findAll();
+        const areacode = await Areacode.findAll();
         res.status(200).json(areacode);
     } catch (e) {
         console.log(e);
@@ -54,7 +54,7 @@ exports.getAreacode = async (req, res) => {
 
 exports.getAreacodeDetail = async (req, res) => {
     try {
-        const areacode = await models.areacode.findOne({
+        const areacode = await Areacode.findOne({
             where: {
                 idx: req.params.id,
             },
@@ -63,7 +63,7 @@ exports.getAreacodeDetail = async (req, res) => {
         if (!areacode) {
             res.status(200).json({}); // 응답은 성공 but 데이터는 없음
         }
-        
+
         areacode.setDataValue("mainpic", "");
         res.status(200).json(areacode);
     } catch (e) {
@@ -72,29 +72,27 @@ exports.getAreacodeDetail = async (req, res) => {
     }
 };
 
-
 exports.areacodeInsert = async (req, res) => {
     try {
-        const saveName = 'mainpicname';
-        const savePath = 'mainpicpath';
+        const saveName = "mainpicname";
+        const savePath = "mainpicpath";
         const inputs = JSON.parse(req.body.jsonData);
         const username = req.user.username;
 
         // 파일 처리
-        if(req.file){
+        if (req.file) {
             const { originalname, mimetype, filename } = req.file;
             const typePath = getTypePath(mimetype);
             const datePath = getDatePath();
-            inputs[saveName] = originalname
+            inputs[saveName] = originalname;
             inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
         }
         inputs.reguser = username;
         inputs.moduser = username;
 
-        const newAreacode = await models.areacode.create(inputs);
+        const newAreacode = await Areacode.create(inputs);
         await newAreacode.save();
         res.status(200).json(newAreacode);
-
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
@@ -104,13 +102,13 @@ exports.areacodeInsert = async (req, res) => {
 // 업데이트
 exports.areacodeUpdate = async (req, res) => {
     try {
-        const saveName = 'mainpicname';
-        const savePath = 'mainpicpath';
+        const saveName = "mainpicname";
+        const savePath = "mainpicpath";
         const inputs = JSON.parse(req.body.jsonData);
         const username = req.user.username;
-        const areacode = await models.areacode.findOne({
-            where: { idx: inputs.idx }
-        })
+        const areacode = await Areacode.findOne({
+            where: { idx: inputs.idx },
+        });
 
         // 파일 처리
         if (req.file && areacode[savePath]) {
@@ -118,11 +116,14 @@ exports.areacodeUpdate = async (req, res) => {
             const typePath = getTypePath(mimetype);
             const datePath = getDatePath();
             areacode.setDataValue(saveName, originalname);
-            areacode.setDataValue(savePath, `uploads/${typePath}/${datePath}/${filename}`);
+            areacode.setDataValue(
+                savePath,
+                `uploads/${typePath}/${datePath}/${filename}`
+            );
             // 기존 파일 삭제
             fs.unlinkSync(path.join(__dirname, `../../${areacode[savePath]}`));
         }
-        
+
         areacode.setDataValue("moduser", username);
         await areacode.save();
 

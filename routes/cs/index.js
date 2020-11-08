@@ -4,6 +4,10 @@ const { protect } = require("../../middlewares/auth");
 const upload = require("../../middlewares/multer");
 
 const { 
+    getPush,
+    getPushDetail,
+    pushInsert,
+    pushUpdate,
     getNotice,
     getNoticeDetail, 
     noticeInsert, 
@@ -14,6 +18,13 @@ const {
     questionUpdate,
     sendEmail,
 } = require('./cs.ctrl');
+
+// Push
+router.get('/push', protect, getPush);
+router.get('/push/:id', protect, getPushDetail);
+router.post('/push/insert', protect, pushInsert);
+router.post('/push/update', protect, pushUpdate);
+
 
 // Notice
 router.get("/notice", protect, getNotice);

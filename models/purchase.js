@@ -1,6 +1,6 @@
 "use strict";
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define("purchase", {
+    const Purchase = sequelize.define("Purchase", {
         idx: {
             type: DataTypes.INTEGER,
             primaryKey: true,
@@ -47,4 +47,14 @@ module.exports = (sequelize, DataTypes) => {
         },
         moduser: { type: DataTypes.STRING(50) },
     });
+
+    Purchase.associate = (models) => {
+        Purchase.hasOne(models.Purchasetour, {
+            as: "Purchasetour",
+            foreignKey: "purchaseidx",
+            sourceKey: "idx",
+            // onDelete: "CASCASE",
+        });
+    };
+    return Purchase;
 };
