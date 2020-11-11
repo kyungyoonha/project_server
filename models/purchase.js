@@ -49,8 +49,8 @@ module.exports = (sequelize, DataTypes) => {
     });
 
     Purchase.associate = (models) => {
-        Purchase.hasOne(models.Purchasetour, {
-            as: "Purchasetour",
+        Purchase.hasMany(models.Purchasetour, {
+            as: "purchasetour",
             foreignKey: "purchaseidx",
             sourceKey: "idx",
             // onDelete: "CASCASE",

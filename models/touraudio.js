@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             allowNull: false,
         },
+        /// ### ☆ tourinx => touridx
         tourinx: {
             type: DataTypes.INTEGER,
             allowNull: false,

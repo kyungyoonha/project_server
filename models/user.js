@@ -72,26 +72,26 @@ module.exports = (sequelize, DataTypes) => {
 
     User.associate = (models) => {
         User.hasOne(models.Triptag, {
-            as: "Triptag",
+            as: "triptag",
             foreignKey: "useridx",
             sourceKey: "idx",
             // onDelete: "CASCASE",
         });
 
         User.hasMany(models.Drivercomplain, {
-            as: "Drivercomplain",
+            as: "drivercomplain",
             foreignKey: "useridx",
             sourceKey: "idx",
         });
 
         User.hasMany(models.Purchase, {
-            as: "Purchase",
+            as: "purchase",
             foreignKey: "useridx",
             sourceKey: "idx",
         });
 
         User.hasMany(models.Question, {
-            as: "Question",
+            as: "question",
             foreignKey: "useridx",
             sourceKey: "idx",
         });

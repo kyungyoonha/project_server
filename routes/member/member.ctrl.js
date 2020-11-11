@@ -6,31 +6,17 @@ const paginate = require("express-paginate");
 exports.getUser = async (req, res) => {
     try {
         const results = await User.findAndCountAll({
-            include: ["Triptag", "Drivercomplain", "Purchase", "Question"],
+            include: ["triptag", "drivercomplain", "purchase", "question"],
             limit: req.query.limit,
             offset: req.offset,
         });
         const pageCount = Math.ceil(results.count / req.query.limit);
         const pages = paginate.getArrayPages(req)(
-            10,
+            7, // 몇개의 페이지씩 볼건지
             pageCount,
             req.query.page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
-    } catch (e) {
-        console.log(e);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-};
-exports.getDriver = async (req, res) => {
-    try {
-    } catch (e) {
-        console.log(e);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-};
-exports.getAdmin = async (req, res) => {
-    try {
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
@@ -88,6 +74,26 @@ exports.userInsert = async (req, res) => {
     }
 };
 
+exports.getDriver = async (req, res) => {
+    try {
+        const results = await Driver.findAndCountAll({
+            include: ["trabus", "drivercomplain"],
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
 exports.driverInsert = async (req, res) => {
     try {
         const inputs = JSON.parse(req.body.jsonData);
@@ -122,6 +128,25 @@ exports.driverInsert = async (req, res) => {
         newDriver.save();
 
         res.status(200).json(newDriver);
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+exports.getAdmin = async (req, res) => {
+    try {
+        const results = await Admin.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });

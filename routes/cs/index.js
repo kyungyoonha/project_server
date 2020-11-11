@@ -40,5 +40,4 @@ router.post("/question/update", protect, questionUpdate);
 
 // Email
 router.post("/email", protect, upload.single("file"), sendEmail);
-
 module.exports = router;

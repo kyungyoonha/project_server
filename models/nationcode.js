@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
 
     Nationcode.associate = (models) => {
         Nationcode.hasMany(models.Areacode, {
-            as: "Areacode",
+            as: "areacode",
             foreignKey: "nationcodeidx",
             sourceKey: "idx",
         });

@@ -91,31 +91,31 @@ module.exports = (sequelize, DataTypes) => {
 
     Tour.associate = (models) => {
         Tour.hasMany(models.Trabus, {
-            as: "Trabus",
+            as: "trabus",
             foreignKey: "touridx",
             sourceKey: "idx",
         });
-
+        /// ### ☆ tourinx => touridx
         Tour.hasMany(models.Touraudio, {
-            as: "Touraudio",
-            foreignKey: "touridx",
+            as: "touraudio",
+            foreignKey: "tourinx",
             sourceKey: "idx",
         });
 
         Tour.hasMany(models.Tourpicture, {
-            as: "Tourpicture",
+            as: "tourpicture",
             foreignKey: "touridx",
             sourceKey: "idx",
         });
 
         Tour.hasMany(models.Purchase, {
-            as: "Purchase",
+            as: "purchase",
             foreignKey: "touridx",
             sourceKey: "idx",
         });
 
         Tour.hasMany(models.Purchasetour, {
-            as: "Purchasetour",
+            as: "purchasetour",
             foreignKey: "touridx",
             sourceKey: "idx",
         });

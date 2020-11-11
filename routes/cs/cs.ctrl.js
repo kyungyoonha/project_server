@@ -3,11 +3,21 @@ const path = require("path");
 const fs = require("fs");
 const { getTypePath, getDatePath } = require("../../utils/pathFunc");
 var nodemailer = require("nodemailer");
+const paginate = require("express-paginate");
 
 exports.getPush = async (req, res) => {
     try {
-        const push = await Push.findAll();
-        res.status(200).json(push);
+        const results = await Push.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
@@ -51,13 +61,23 @@ exports.pushUpdate = async (req, res) => {
 
 exports.getNotice = async (req, res) => {
     try {
-        const notice = await Notice.findAll();
-        res.status(200).json(notice);
+        const results = await Notice.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 exports.getNoticeDetail = async (req, res) => {
     try {
         const notice = await Notice.findOne({ where: { idx: req.params.id } });
@@ -133,13 +153,23 @@ exports.noticeUpdate = async (req, res) => {
 
 exports.getQuestion = async (req, res) => {
     try {
-        const question = await Question.findAll();
-        res.status(200).json(question);
+        const results = await Question.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
 exports.getQuestionDetail = async (req, res) => {
     try {
         const question = await Question.findOne({

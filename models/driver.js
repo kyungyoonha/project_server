@@ -1,4 +1,5 @@
 "use strict";
+// ### ☆ dirvername => driverpicname
 module.exports = (sequelize, DataTypes) => {
     const Driver = sequelize.define("Driver", {
         idx: {
@@ -67,13 +68,13 @@ module.exports = (sequelize, DataTypes) => {
 
     Driver.associate = (models) => {
         Driver.hasMany(models.Drivercomplain, {
-            as: "Drivercomplain",
+            as: "drivercomplain",
             foreignKey: "driveridx",
             sourceKey: "idx",
         });
 
         Driver.hasMany(models.Trabus, {
-            as: "Trabus",
+            as: "trabus",
             foreignKey: "driveridx",
             sourceKey: "idx",
         });

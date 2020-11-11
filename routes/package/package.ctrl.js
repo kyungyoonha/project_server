@@ -1,12 +1,51 @@
-const { Nationcode, Areacode } = require("../../models");
+const { Tour, Nationcode, Areacode } = require("../../models");
 const path = require("path");
 const fs = require("fs");
 const { getTypePath, getDatePath } = require("../../utils/pathFunc");
+const paginate = require("express-paginate");
+
+exports.getTour = async (req, res) => {
+    try {
+        const results = await Tour.findAndCountAll({
+            include: [
+                "trabus",
+                "touraudio",
+                "tourpicture",
+                "purchase",
+                "purchasetour",
+            ],
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
+
+exports.getTourDetail = async (req, res) => {};
+exports.tourInsert = async (req, res) => {};
 
 exports.getNationcode = async (req, res) => {
     try {
-        const nationcode = await Nationcode.findAll();
-        res.status(200).json(nationcode);
+        const results = await Nationcode.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
@@ -44,8 +83,18 @@ exports.nationcodeInsert = async (req, res) => {
 
 exports.getAreacode = async (req, res) => {
     try {
-        const areacode = await Areacode.findAll();
-        res.status(200).json(areacode);
+        const results = await Areacode.findAndCountAll({
+            limit: req.query.limit,
+            offset: req.offset,
+        });
+        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pages = paginate.getArrayPages(req)(
+            7, // 몇개의 페이지씩 볼건지
+            pageCount,
+            req.query.page
+        );
+
+        res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
