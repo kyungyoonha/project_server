@@ -1,20 +1,28 @@
+const { Op } = require("sequelize");
 const bcrypt = require("bcryptjs");
-const { getTypePath, getDatePath } = require("../../utils/pathFunc");
-const { User, Driver, Admin, TriptagModel } = require("../../models");
 const paginate = require("express-paginate");
+const { User, Driver, Admin, TriptagModel } = require("../../models");
+const {
+    getTypePath,
+    getDatePath,
+    makeWhereCondition,
+} = require("../../utils/pathFunc");
 
 exports.getUser = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await User.findAndCountAll({
             include: ["triptag", "drivercomplain", "purchase", "question"],
-            limit: req.query.limit,
             offset: req.offset,
+            limit,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
@@ -76,16 +84,19 @@ exports.userInsert = async (req, res) => {
 
 exports.getDriver = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await Driver.findAndCountAll({
             include: ["trabus", "drivercomplain"],
-            limit: req.query.limit,
             offset: req.offset,
+            limit,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
@@ -136,15 +147,18 @@ exports.driverInsert = async (req, res) => {
 
 exports.getAdmin = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await Admin.findAndCountAll({
-            limit: req.query.limit,
             offset: req.offset,
+            limit,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {

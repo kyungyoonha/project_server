@@ -7,15 +7,18 @@ const paginate = require("express-paginate");
 
 exports.getPush = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await Push.findAndCountAll({
-            limit: req.query.limit,
+            limit,
             offset: req.offset,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
@@ -61,15 +64,18 @@ exports.pushUpdate = async (req, res) => {
 
 exports.getNotice = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await Notice.findAndCountAll({
-            limit: req.query.limit,
+            limit,
             offset: req.offset,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
@@ -153,15 +159,18 @@ exports.noticeUpdate = async (req, res) => {
 
 exports.getQuestion = async (req, res) => {
     try {
+        const { page, limit, ...rest } = req.query;
+        const where = makeWhereCondition(rest);
         const results = await Question.findAndCountAll({
-            limit: req.query.limit,
+            limit,
             offset: req.offset,
+            where,
         });
-        const pageCount = Math.ceil(results.count / req.query.limit);
+        const pageCount = Math.ceil(results.count / limit);
         const pages = paginate.getArrayPages(req)(
             7, // 몇개의 페이지씩 볼건지
             pageCount,
-            req.query.page
+            page
         );
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
