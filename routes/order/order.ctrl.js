@@ -1,5 +1,6 @@
 const { Purchase, Purchasecode } = require("../../models");
 const paginate = require("express-paginate");
+const { makeWhereCondition } = require("../../utils/pathFunc");
 
 exports.getPurchase = async (req, res) => {
     try {

@@ -1,9 +1,13 @@
 const { Push, Notice, Question } = require("../../models");
 const path = require("path");
 const fs = require("fs");
-const { getTypePath, getDatePath } = require("../../utils/pathFunc");
-var nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer");
 const paginate = require("express-paginate");
+const {
+    getTypePath,
+    getDatePath,
+    makeWhereCondition,
+} = require("../../utils/pathFunc");
 
 exports.getPush = async (req, res) => {
     try {

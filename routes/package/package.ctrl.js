@@ -1,7 +1,11 @@
 const { Tour, Nationcode, Areacode } = require("../../models");
 const path = require("path");
 const fs = require("fs");
-const { getTypePath, getDatePath } = require("../../utils/pathFunc");
+const {
+    getTypePath,
+    getDatePath,
+    makeWhereCondition,
+} = require("../../utils/pathFunc");
 const paginate = require("express-paginate");
 
 exports.getTour = async (req, res) => {
@@ -26,6 +30,7 @@ exports.getTour = async (req, res) => {
             pageCount,
             page
         );
+        console.log(results.rows);
         res.status(200).json({ pageCount, pages, data: results.rows });
     } catch (e) {
         console.log(e);
@@ -34,7 +39,17 @@ exports.getTour = async (req, res) => {
 };
 
 exports.getTourDetail = async (req, res) => {};
-exports.tourInsert = async (req, res) => {};
+exports.tourInsert = async (req, res) => {
+    try {
+        const newTour = await Tour.create(req.body);
+        console.log(newTour);
+        await newTour.save();
+        res.status(200).json(newTour);
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};
 
 exports.getNationcode = async (req, res) => {
     try {
