@@ -6,6 +6,8 @@ const {
     getTour,
     getTourDetail,
     tourInsert,
+    tourImageInsert,
+    tourAudioInsert,
     getNationcode,
     getNationcodeDetail,
     nationcodeInsert,
@@ -14,10 +16,12 @@ const {
     areacodeInsert,
     areacodeUpdate,
 } = require("./package.ctrl");
-
+// tour
 router.get("/tour", protect, getTour);
 router.get("/tour/:id", protect, getTourDetail);
 router.post("/tour/insert", protect, tourInsert)
+router.post("/tourimage/insert", protect, upload.single("file"), tourImageInsert);
+router.post("/touraudio/insert", protect, upload.single("audiofile"), tourAudioInsert);
 // nationcode
 router.get("/nationcode", protect, getNationcode);
 router.get("/nationcode/:id", protect, getNationcodeDetail);

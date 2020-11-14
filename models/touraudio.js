@@ -30,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false,
         },
         audiofilepath: {
-            type: DataTypes.STRING(20),
+            type: DataTypes.STRING(200), // ### ☆ 200으로 올릴것
             allowNull: false,
         },
         audiolanguage: { type: DataTypes.STRING(200) },
