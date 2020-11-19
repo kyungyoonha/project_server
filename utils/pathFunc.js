@@ -21,17 +21,34 @@ exports.getDatePath = () => {
 
 exports.makeWhereCondition = (queryObj) => {
     const keys = Object.keys(queryObj);
-
-    const likeCondition = [];
+    const exceptDate = ["tourstartday", "tourendday", "purchasedate"];
+    const condition = [];
     for (let key of keys) {
-        likeCondition.push({
-            [key]: {
-                [Op.like]: `%${queryObj[key]}%`,
-            },
-        });
+        if (queryObj[key]) {
+            if (exceptDate.indexOf(key) > -1) {
+                let startDate = new Date(
+                    new Date(queryObj[key]).setHours(0, 0, 0, -1)
+                );
+                let endDate = new Date(
+                    new Date(queryObj[key]).setHours(23, 59, 59, 999)
+                );
+
+                condition.push({
+                    [key]: {
+                        [Op.between]: [startDate, endDate],
+                    },
+                });
+            } else {
+                condition.push({
+                    [key]: {
+                        [Op.like]: `%${queryObj[key]}%`,
+                    },
+                });
+            }
+        }
     }
 
     return {
-        [Op.and]: likeCondition,
+        [Op.and]: condition,
     };
 };

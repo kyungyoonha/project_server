@@ -188,3 +188,16 @@ exports.adminInsert = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 };
+
+exports.test = async (req, res) => {
+    try {
+        console.log("=======================");
+        console.log(req.file);
+        console.log("=======================");
+        console.log(req.body);
+        console.log("=======================");
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};

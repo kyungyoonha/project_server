@@ -8,7 +8,8 @@ const {
     getDriver, 
     driverInsert, 
     getAdmin, 
-    adminInsert 
+    adminInsert,
+    test
 } = require("./member.ctrl");
 
 const uploadFields = [ 
@@ -17,6 +18,7 @@ const uploadFields = [
     { name: "license", maxCount: 1 } 
 ]
 
+router.post('/test', upload.single("file"), test);
 // User
 router.get("/user", getUser);
 router.post("/user/insert", protect, upload.single("profile"), userInsert);
