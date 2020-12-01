@@ -6,7 +6,7 @@ const { getPurchase, PurchaseInsert, PurchasetourInsert, purchasecodeInsert, get
 // purchase 
 router.get("/purchase", protect, getPurchase);
 router.post("/purchase/insert", protect, PurchaseInsert)
-router.post("/purchasetour/insert", protect, PurchasetourInsert)
+
 // purchase
 router.get("/purchasecode", protect, getPruchasecode);
 router.post("/purchasecode/insert", protect, purchasecodeInsert);

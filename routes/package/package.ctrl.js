@@ -46,67 +46,67 @@ exports.getTour = async (req, res) => {
 exports.getTourDetail = async (req, res) => {};
 exports.tourInsert = async (req, res) => {
     try {
-        const newTour = await Tour.create(req.body);
+        const fileAudios = req.files["audios"];
+        const fileImages = req.files["images"];
+        const inputs = JSON.parse(req.body.jsonData);
+        const datePath = getDatePath();
+
+        if (!inputs.images.length && !fileImages) {
+            res.status(400).json({ error: "관광지 사진을 추가해주세요" });
+        }
+
+        if (!inputs.audios.length && !fileAudios) {
+            res.status(400).json({ error: "오디오를 추가해주세요" });
+        }
+
+        const username = req.user.username;
+        inputs.reguser = username;
+        inputs.moduser = username;
+
+        // [ Tour 저장 ]
+        const newTour = await Tour.create(inputs);
         await newTour.save();
+
+        // [ Images 저장 ]
+        for (let idx = 0; idx < inputs.images.length; idx++) {
+            const item = inputs.images[idx];
+            const { originalname, mimetype, filename } = fileImages[idx];
+            const typePath = getTypePath(mimetype);
+            item.touridx = newTour.idx;
+            item["filename"] = originalname;
+            item["filepath"] = `uploads/${typePath}/${datePath}/${filename}`;
+            item.reguser = username;
+            item.moduser = username;
+
+            const newTourpicture = await Tourpicture.create(item);
+            await newTourpicture.save();
+            console.log("image done");
+        }
+
+        // [ Audios 저장 ]
+        for (let idx = 0; idx < inputs.audios.length; idx++) {
+            const item = inputs.audios[idx];
+            const { originalname, mimetype, filename } = fileImages[idx];
+            const typePath = getTypePath(mimetype);
+
+            item.touridx = newTour.idx;
+            item.tourinx = newTour.idx; // ### ☆
+            item["audiofilename"] = originalname;
+            // item[
+            //     "audiofilepath"
+            // ] = `uploads/${typePath}/${datePath}/${filename}`;
+            item["audiofilepath"] = `/${datePath}`;
+            item.reguser = username;
+            item.moduser = username;
+            const newTouraudio = await Touraudio.create(item);
+
+            await newTouraudio.save();
+            console.log("audio done");
+        }
+
         res.status(200).json(newTour);
     } catch (e) {
-        console.log(e);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-};
-
-exports.tourImageInsert = async (req, res) => {
-    try {
-        const saveName = "filename";
-        const savePath = "filepath";
-        const inputs = JSON.parse(req.body.jsonData);
-        const username = req.user.username;
-
-        // 파일 처리
-        if (req.file) {
-            const { originalname, mimetype, filename } = req.file;
-            const typePath = getTypePath(mimetype);
-            const datePath = getDatePath();
-            inputs[saveName] = originalname;
-            inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
-        }
-        inputs.reguser = username;
-        inputs.moduser = username;
-
-        const newTourpicture = await Tourpicture.create(inputs);
-        await newTourpicture.save();
-        res.status(200).json(newTourpicture);
-    } catch (e) {
-        console.log(e);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-};
-
-exports.tourAudioInsert = async (req, res) => {
-    try {
-        const saveName = "audiofilename";
-        const savePath = "audiofilepath";
-        const inputs = JSON.parse(req.body.jsonData);
-        const username = req.user.username;
-
-        // 파일 처리
-        if (req.file) {
-            const { originalname, mimetype, filename } = req.file;
-            const typePath = getTypePath(mimetype);
-            const datePath = getDatePath();
-            inputs[saveName] = originalname;
-            // inputs[savePath] = `uploads/${typePath}/${datePath}/${filename}`;
-            inputs[savePath] = `/${datePath}`;
-        }
-
-        inputs.tourinx = inputs.touridx; // ### ☆
-        inputs.reguser = username;
-        inputs.moduser = username;
-
-        const newTouraudio = await Touraudio.create(inputs);
-        await newTouraudio.save();
-        res.status(200).json(newTouraudio);
-    } catch (e) {
+        console.log("-0-fewjfioejwioes");
         console.log(e);
         res.status(500).json({ error: "Internal Server Error" });
     }
